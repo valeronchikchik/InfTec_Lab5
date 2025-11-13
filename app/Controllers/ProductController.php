@@ -77,9 +77,29 @@ class ProductController extends Controller
         $this->set("title", "Додавання товару");
 
         if ($values = $model->getPostValues()) {
-            $model->addItem($values);
-            $this->redirect("/product/list");
+            $newProduct = $model->addItem($values);
+            if ($newProduct){
+               $this->redirect(sprintf("/product/edit?id=%d", $newProduct["id"]));
+            }
         }
+        $this->renderLayout();
+    }
+
+    /**
+     *
+     */
+    public function deleteAction()
+    {
+        $model = $this->getModel('Product');
+        $this->set("title", "Вилучення товару");
+        $id = filter_input(INPUT_POST, 'id');
+        if ($id) {
+            $model->deleteItem($id);
+            $this->redirect('/product/list');
+            return;
+        }
+        $this->set('product', $model->getItem($this->getId()));
+
         $this->renderLayout();
     }
 
